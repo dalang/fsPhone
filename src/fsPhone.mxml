@@ -208,8 +208,8 @@
 		{
 			trace("CallConnectedEvent " + event.publishName + " " + event.playName);
 //			phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtEstablished');
-			FlexGlobals.topLevelApplication.fsPhoneView.callConnected(rtmp.netConnection, event.playName, event.publishName);
-			
+			FlexGlobals.topLevelApplication.navigator.activeView.callConnected(rtmp.netConnection, event.playName, event.publishName);
+			//FlexGlobals.topLevelApplication.navigator.activeView.actionBarVisible = true;
 //			if (phoneCanvas.isConferenceCall())
 //				socketManager.sendConferenceListCmd(phoneCanvas.curCall);
 		}

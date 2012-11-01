@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" creationComplete="init()">
+		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" creationComplete="init()" title='XXXX'>
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
@@ -46,7 +46,7 @@
 //				missedCalls = new Array();
 //				receivedCalls = new Array();
 //				dialedCalls = new Array();
-				this.addEventListener('doCall', doCall);
+				//this.addEventListener('parentDoSomething', onHeaderBarToldMeTo);
 			}
 
 			public function initMicrophone():void
@@ -180,6 +180,9 @@
 				incomingNetStream.play(playName);
 				outgoingNetStream.publish(publishName, "live");
 				
+				var app:dialView = dialV.activeView as dialView;
+				app.setEnd();
+				
 //				volSlider.enabled = true;
 //				micSlider.enabled = true;
 //				
@@ -245,9 +248,9 @@
 			{
 			}
 			
-			public function doCall(event:Event):void
+			public function doCall(dialNum:String):void
 			{
-				var dialNum:String = FlexGlobals.topLevelApplication.fsPhoneView.dialNumTxt.text;
+				//var dialNum:String = FlexGlobals.topLevelApplication.fsPhoneView.dialNumTxt.text;
 				parentApplication.rtmp.doCall(dialNum);
 				// HARDCODE here!!! Check if the connection is a conference call
 //				if (int(dialnumTxt.text) >= 3000 && int(dialnumTxt.text) < 4000)
@@ -273,6 +276,10 @@
 //				dialedCalls.unshift(dialedCallObj);
 //				curCall = dialedCallObj.label;
 			}
+			
+			public function doHangUp():void {
+				parentApplication.rtmp.doHangUp();
+			}
 		]]>
 	</fx:Script>
 	
@@ -282,7 +289,7 @@
 	</s:viewMenuItems>
 	
 	<s:TabbedViewNavigator width="100%" height="100%">
-		<s:ViewNavigator label="1st Tab" width="100%" height="100%" 
+		<s:ViewNavigator id='dialV' label="Dial" width="100%" height="100%" 
 						 firstView="views.dialView"/>
 		<s:ViewNavigator label="2nd Tab" width="100%" height="100%" 						 
 						 firstView="views.logsView"/>

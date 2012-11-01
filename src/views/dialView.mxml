@@ -37,10 +37,16 @@
 				dispatchEvent(new Event('doCall'));
 			}
 			
-			private function onCall(event:Event):void {
-				dialnumTxt.text = "";
+			private function onCall():void {
+				if (callBtn.label == 'call')
+					parentDocument.doCall(dialnumTxt.text);
+				else
+					parentDocument.doHangUp();
 			}
-			
+			public function setEnd():void {
+				callBtn.label = 'end';
+				
+			}
 		]]>
 	</fx:Script>
 	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false"/>
@@ -68,7 +74,7 @@
 		</s:HGroup>
 		<s:HGroup width="300" height="60" gap="0" horizontalAlign="center" verticalAlign="middle">
 			<s:Button width="25%" label="record"/>
-			<s:Button width="40%" label="call" click="doCall()"/>
+			<s:Button id='callBtn' width="40%" label="call" click="onCall()"/>
 			<s:Button width="25%" label="backspace"/>
 		</s:HGroup>
 	</s:VGroup>
