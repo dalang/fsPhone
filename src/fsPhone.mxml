@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							xmlns:s="library://ns.adobe.com/flex/spark" firstView="views.fsPhoneLoginView" applicationDPI="160">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<fx:Component className="AlertMsg">
+			<s:SkinnablePopUpContainer x="70" y="300">
+				<s:TitleWindow title="My Message" close="close()">
+					<s:VGroup horizontalAlign="center" paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="8" gap="5" width="100%">
+						<s:Label text="My alert message text here..."/>
+						<s:Button label="OK" click="close()"/>
+					</s:VGroup>
+				</s:TitleWindow>
+			</s:SkinnablePopUpContainer>
+		</fx:Component>
+	</fx:Declarations>
+<fx:Script>
+	<![CDATA[
+		import mx.core.FlexGlobals;
+		
+		import com.FreeSWITCH.XML.CUSTOM.Conference_event;
+		import com.FreeSWITCH.XML.ESL_event;
+		import com.FreeSWITCH.rtmp.RTMP;
+		import com.FreeSWITCH.socket.SocketManager;
+		
+		import events.*;
+		
+		import flash.utils.flash_proxy;
+		
+		import views.fsPhoneView;
+		
+		private var username:String;
+		private var password:String;
+		private var sipRealm:String;
+		private var sipServer:String;
+		
+		public var rtmp:RTMP = null;
+		public var socketManager:SocketManager = null;
+		
+//		public function login(username:String, password:String, realm:String, server:String, socketPort:String = null, socketPsw:String = null):void
+		public function login(username:String, password:String, realm:String, server:String):void
+		{
+//			this.username = username;
+//			this.password = password;
+//			this.sipRealm = realm;
+//			this.sipServer = server;
+//			
+//			// update internalConfig
+////			if (socketPort)
+////				internalConfig.socketPort = socketPort;
+////			if (socketPsw)
+////				internalConfig.socketPsw = socketPsw;
+//			
+			rtmp = new RTMP(username, password, realm, server);
+			rtmp.addEventListener(LogMessageEvent.LOG, receivedLogMessageEvent);
+////			socketManager = new SocketManager(this.sipServer, internalConfig.socketPort, internalConfig.socketPsw, this.sipRealm);
+////			socketManager.addEventListener(SocketMessageEvent.MESSAGE, receivedSocketMessageEvent);
+////			socketManager.addEventListener(LogMessageEvent.LOG, receivedLogMessageEvent);
+//			
+//			// Step 1 setup socket connection
+////			socketManager.eslConnect();
+//			
+//			// Step 2 setup rtmp connection
+			rtmp.connect();
+			rtmp.addEventListener(RtmpMessageEvent.MESSAGE, receivedRtmpMessageEvent);
+			rtmp.addEventListener(IncomingCallEvent.INCOMING, incomingCallEvent);
+			rtmp.addEventListener(CallConnectedEvent.CONNECTED, callConnectedEvent);
+			rtmp.addEventListener(CallDisconnectedEvent.DISCONNECTED, callDisconnectedEvent);
+			rtmp.addEventListener(MissedCallEvent.CALLMISSED, missedCallEvent);
+			
+			//(new AlertMsg()).open(this, false);
+			
+		}
+		
+		private function receivedLogMessageEvent(event:LogMessageEvent):void
+		{
+			var msgType:String = event.msgType;
+			var message:String = event.message;
+			
+//			switch (msgType)
+//			{
+//				case LogMessageEvent.RTMPLOG:
+//					phoneCanvas.rtmpLogBox.text += message + "\n";
+//					phoneCanvas.rtmpLogBox.verticalScrollPosition = phoneCanvas.rtmpLogBox.maxVerticalScrollPosition;
+//					break;
+//				
+//				case LogMessageEvent.ESLLOG:
+//					phoneCanvas.eslLogBox.text += message + "\n";
+//					phoneCanvas.eslLogBox.verticalScrollPosition = phoneCanvas.eslLogBox.maxVerticalScrollPosition;
+//					break;
+//				
+//				default:
+//			}
+		}
+		
+		private function receivedRtmpMessageEvent(event:RtmpMessageEvent):void
+		{
+			var msgType:String = event.msgType;
+			var message:String = event.message;
+			
+			switch (msgType)
+			{
+				case RtmpMessageEvent.NETSTAUS:
+					
+					if (message == 'Failed to connect to FreeSWITCH')
+					{
+//						phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtFailed');
+//						loginCanvas.visible = true;
+//						phoneCanvas.visible = false;
+//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('phoneCanvas.sTxtFailed'), false);
+					}
+					else if (message == 'Connection success')
+					{
+//						phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtConnected');
+//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('phoneCanvas.sTxtConnected'));
+						// Step 3 register to freeswitch after connect to mod_rtmp
+						rtmp.login();
+					}
+					else
+					{
+//						loginCanvas.alertMsgTxt.text = message;
+//						phoneCanvas.statusTxt.text = message;
+					}
+					
+					break;
+				
+//				case RtmpMessageEvent.SIP_Login:
+//					if (message == 'SUCCESS')
+//					{
+//						loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegS');
+//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('loginCanvas.RegOK'));
+//					}
+//						
+//					else
+//					{
+//						if (message == 'no such user')
+//						{
+//							loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegF') + ResourceUtil.getInstance().getString('loginCanvas.LogErrCode1');
+//						}
+//						else if (message == 'password is empty')
+//						{
+//							loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegF') + ResourceUtil.getInstance().getString('loginCanvas.LogErrCode2');
+//						}
+//						else if (message == 'password is wrong')
+//						{
+//							loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegF') + ResourceUtil.getInstance().getString('loginCanvas.LogErrCode3');
+//						}
+//						else
+//						{ //message == 'failure
+//							loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegF') + ResourceUtil.getInstance().getString('loginCanvas.ErrCode');
+//						}
+//						
+//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('loginCanvas.RegFail'), false);
+//						rtmp = null;
+//					}
+//					
+//					break;
+//				
+//				case RtmpMessageEvent.SIP_REGISTER:
+//					if (message == 'SUCCESS')
+//					{
+//						loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegS');
+//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('loginCanvas.RegOK'));
+//					}
+//						
+//					else
+//					{
+//						if (-1 != message.lastIndexOf("sipid had been used"))
+//						{
+//							loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegF') + ResourceUtil.getInstance().getString('loginCanvas.RegErrCode1');
+//						}
+//						else
+//						{ //message == 'failure
+//							loginCanvas.alertMsgTxt.text = ResourceUtil.getInstance().getString('loginCanvas.alertMsgRegF') + ResourceUtil.getInstance().getString('loginCanvas.ErrCode');
+//						}
+//						
+//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('loginCanvas.RegFail'), false);
+//						rtmp = null;
+//					}
+//					
+//					break;
+//				
+//				case RtmpMessageEvent.RECORDSTATE:
+//					if (message == 'on')
+//					{
+//						phoneCanvas.recordBoxStatus(true);
+//					}
+//					else
+//						phoneCanvas.recordBoxStatus(false);
+//					
+//					break;
+//				
+//				case RtmpMessageEvent.CALLSTATE:
+//					break;
+//				
+				default:
+			}
+		}
+		
+		
+		private function incomingCallEvent(event:IncomingCallEvent):void
+		{
+			trace("incomingCallEvent " + event.uuid + " " + event.number + " " + event.name);
+//			phoneCanvas.incomingCall(event);
+		}
+		
+		private function callConnectedEvent(event:CallConnectedEvent):void
+		{
+			trace("CallConnectedEvent " + event.publishName + " " + event.playName);
+//			phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtEstablished');
+			FlexGlobals.topLevelApplication.fsPhoneView.callConnected(rtmp.netConnection, event.playName, event.publishName);
+			
+//			if (phoneCanvas.isConferenceCall())
+//				socketManager.sendConferenceListCmd(phoneCanvas.curCall);
+		}
+		
+		private function callDisconnectedEvent(event:CallDisconnectedEvent):void
+		{
+			trace("CallDisconnectedEvent " + event.message);
+//			phoneCanvas.callDisconnected(event);
+		}
+		
+		private function missedCallEvent(event:MissedCallEvent):void
+		{
+			trace("CallDisconnectedEvent " + event.message);
+//			phoneCanvas.missedCall();
+		}
+
+	]]>
+</fx:Script>
+</s:ViewNavigatorApplication>

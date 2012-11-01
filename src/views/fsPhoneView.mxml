@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" creationComplete="init()">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+
+			public var netConnection:NetConnection = null;
+			private var incomingNetStream:NetStream = null;
+			private var outgoingNetStream:NetStream = null;
+			private var publishName:String = null;
+			private var mic:Microphone = null;
+			private var isConnected:Boolean = false;
+			private var isRinging:Boolean = false;
+			private var isDialing:Boolean = false;
+			private var ringSound:Sound = null;
+			private var dialSound:Sound = null;
+			private var outgoingSound:Sound = null;
+			private var errorSound:Sound = null;
+			private var ringChannel:SoundChannel = null;
+			private var dialChannel:SoundChannel = null;
+			private var dtmfChannel:SoundChannel = null;
+			
+			[Embed(source = "assets/ringing.mp3")]
+			private var ringingClass:Class;
+			
+			[Embed(source = "assets/dialing.mp3")]
+			private var dialingClass:Class;
+			
+			private function init():void
+			{
+//				this.holdButton.enabled = false;
+//				
+//				//				groupItem = new ArrayCollection();
+//				timer = new Timer(3000, 0);
+//				timer.addEventListener(TimerEvent.TIMER, timerHandler);
+				
+				ringSound = new ringingClass();
+				dialSound = new dialingClass();
+//				outgoingSound = new outgoingClass();
+//				errorSound = new errorClass();
+				initMicrophone();
+//				missedCalls = new Array();
+//				receivedCalls = new Array();
+//				dialedCalls = new Array();
+				this.addEventListener('doCall', doCall);
+			}
+
+			public function initMicrophone():void
+			{
+				mic = getMicrophone();
+				
+				if (mic == null)
+				{
+					trace("No available microphone");
+				}
+				else
+				{
+					mic.addEventListener(ActivityEvent.ACTIVITY, micActivityHandler);
+					mic.addEventListener(StatusEvent.STATUS, micStatusHandler);
+					mic.codec = SoundCodec.SPEEX;
+					mic.setUseEchoSuppression(true);
+					mic.setLoopBack(false);
+					mic.setSilenceLevel(0, 20000);
+					mic.framesPerPacket = 1;
+					mic.gain = 55;
+					mic.rate = 16;
+					
+				}
+			}
+			
+			private function getMicrophone():Microphone
+			{
+				var mic:Microphone = Microphone.getEnhancedMicrophone();
+				var options:MicrophoneEnhancedOptions = new MicrophoneEnhancedOptions();
+				options.mode = MicrophoneEnhancedMode.FULL_DUPLEX;
+				options.nonLinearProcessing = true;
+				if (null != mic)
+					mic.enhancedOptions = options;
+				
+				return mic;
+			}
+
+			private function micActivityHandler(event:ActivityEvent):void
+			{
+			}
+			
+			private function micStatusHandler(event:StatusEvent):void
+			{
+				switch (event.code)
+				{
+					case "Microphone.Muted":
+						break;
+					case "Microphone.Unmuted":
+						break;
+					default:
+						trace("unknown micStatusHandler event: " + event);
+				}
+			}
+			
+//			private function toggleMute():void
+//			{
+//				if (isConnected)
+//				{
+//					if (!muted)
+//					{
+//						if (outgoingNetStream != null)
+//						{
+//							outgoingNetStream.close();
+//							outgoingNetStream = null;
+//							micIcon.source = micMute;
+//							muted = true;
+//						}
+//					}
+//					else
+//					{
+//						outgoingNetStream = new NetStream(getNetConnection());
+//						outgoingNetStream.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
+//						outgoingNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+//						outgoingNetStream.attachAudio(mic);
+//						outgoingNetStream.bufferTime = 0;
+//						outgoingNetStream.publish(publishName, "live");
+//						var custom_obj:Object = new Object();
+//						custom_obj.onPlayStatus = playStatus;
+//						outgoingNetStream.client = custom_obj;
+//						micIcon.source = micActive;
+//						muted = false;
+//					}
+//				}
+//			}
+		
+			private function getNetConnection():NetConnection
+			{
+				return netConnection;
+			}
+			
+			private function setNetConnection(netConnection:NetConnection):void
+			{
+				this.netConnection = netConnection;
+			}
+			
+			private function getPublishName():String
+			{
+				return publishName;
+			}
+			
+			private function setPublishName(publishName:String):void
+			{
+				this.publishName = publishName;
+			}
+
+			public function callConnected(netConnection:NetConnection, playName:String, publishName:String):void
+			{
+				isConnected = true;
+				
+				setNetConnection(netConnection);
+				setPublishName(publishName);
+				incomingNetStream = new NetStream(netConnection);
+				//incomingNetStream.bufferTime = 0;
+				incomingNetStream.bufferTime = 0.2;
+				incomingNetStream.receiveAudio(true);
+				incomingNetStream.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
+				incomingNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+				
+				
+				outgoingNetStream = new NetStream(netConnection);
+				//outgoingNetStream.bufferTime = 0;
+				outgoingNetStream.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
+				outgoingNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+				outgoingNetStream.attachAudio(mic);
+				
+				var custom_obj:Object = new Object();
+				custom_obj.onPlayStatus = playStatus;
+				incomingNetStream.client = custom_obj;
+				outgoingNetStream.client = custom_obj;
+				
+				incomingNetStream.play(playName);
+				outgoingNetStream.publish(publishName, "live");
+				
+//				volSlider.enabled = true;
+//				micSlider.enabled = true;
+//				
+//				pickupButton.visible = false;
+//				dialButton.enabled = false;
+//				
+//				if (isConference)
+//				{
+//					transferButton.visible = false;
+//					holdButton.visible = false;
+//				}
+//				else
+//				{
+//					transferButton.visible = true;
+//				}
+//				
+//				indicatorIcon.source = green;
+//				startTimer();
+				
+				if (isDialing)
+				{
+					dialChannel.stop();
+					isDialing = false;
+				}
+				
+			}
+			
+			private function netStatus(evt:NetStatusEvent):void
+			{
+				
+				switch (evt.info.code)
+				{
+					
+					case "NetStream.Play.StreamNotFound":
+						break;
+					
+					case "NetStream.Play.Failed":
+						parentApplication.rtmp.doStreamStatus("failed");
+						break;
+					
+					case "NetStream.Play.Start":
+						parentApplication.rtmp.doStreamStatus("start");
+						break;
+					
+					case "NetStream.Play.Stop":
+						parentApplication.rtmp.doStreamStatus("stop");
+						break;
+					
+					case "NetStream.Buffer.Full":
+						break;
+					
+					default:
+						
+				}
+			}
+			
+			private function asyncErrorHandler(event:AsyncErrorEvent):void
+			{
+				trace("AsyncErrorEvent: " + event);
+			}
+			
+			private function playStatus(event:Object):void
+			{
+			}
+			
+			public function doCall(event:Event):void
+			{
+				var dialNum:String = FlexGlobals.topLevelApplication.fsPhoneView.dialNumTxt.text;
+				parentApplication.rtmp.doCall(dialNum);
+				// HARDCODE here!!! Check if the connection is a conference call
+//				if (int(dialnumTxt.text) >= 3000 && int(dialnumTxt.text) < 4000)
+//					isConference = true;
+//				
+//				dialButton.enabled = false;
+//				clearButton.enabled = true;
+//				indicatorIcon.source = green;
+//				statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtCalling');
+				if (!isDialing)
+				{
+					dialChannel = dialSound.play(0, 10);
+					isDialing = true;
+				}
+//				if (dialedCalls.length >= 10)
+//				{
+//					dialedCalls.pop();
+//				}
+//				dialedCallObj = new Object();
+//				dialedCallObj.data = dialNum;
+//				dialedCallObj.label = dialNum;
+//				dialedCallObj.time = new Date().toString();
+//				dialedCalls.unshift(dialedCallObj);
+//				curCall = dialedCallObj.label;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:viewMenuItems>
+		<s:ViewMenuItem label="Cancel"/>
+		<s:ViewMenuItem label="Login"/>
+	</s:viewMenuItems>
+	
+	<s:TabbedViewNavigator width="100%" height="100%">
+		<s:ViewNavigator label="1st Tab" width="100%" height="100%" 
+						 firstView="views.dialView"/>
+		<s:ViewNavigator label="2nd Tab" width="100%" height="100%" 						 
+						 firstView="views.logsView"/>
+	</s:TabbedViewNavigator>
+</s:View>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" xmlns:supportClasses="spark.skins.mobile.supportClasses.*" title="Login" viewActivate="init(event)" menuKeyPressed="menuKeyPressedHandler(event)">
+	<s:layout>
+		<s:BasicLayout>
+			
+		</s:BasicLayout>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import spark.events.ViewNavigatorEvent;
+			
+			protected function init(event:ViewNavigatorEvent):void {
+				//mx.core.FlexGlobals.topLevelApplication.viewMenuOpen = true;
+			}
+			
+			protected function menuKeyPressedHandler(event:FlexEvent):void {
+				//event.preventDefault();
+			}
+			
+			private function onCancel(event:MouseEvent):void {
+				NativeApplication.nativeApplication.exit();
+			}
+			
+			private function onLogin(event:MouseEvent):void {
+				this.parentApplication.login(sipAccountTxt.text, sipPswTxt.text, sipRealmTxt.text, sipServerTxt.text);
+				navigator.pushView(views.fsPhoneView);
+			}
+
+		]]>
+	</fx:Script>
+	<s:viewMenuItems>
+		<s:ViewMenuItem label="Cancel" click="onCancel(event)"/>
+		<s:ViewMenuItem label="Login" click="onLogin(event)"/>
+	</s:viewMenuItems>
+	<s:Group x="21" y="57" width="280" height="284">
+		<s:Label x="26" y="10" text="SIP Account"/>
+		<s:TextInput id="sipAccountTxt" x="25" y="30" width="230" tabEnabled="true" tabIndex="0"
+					 text="1001"/>
+		<s:Label x="26" y="70" text="Password"/>
+		<s:TextInput id="sipPswTxt" x="25" y="90" width="230" displayAsPassword="true"
+					 tabEnabled="true" tabIndex="1" text="1234"/>
+		<s:Label x="26" y="149" text="SIP Realm" tabEnabled="false"/>
+		<s:TextInput id="sipRealmTxt" x="25" y="169" width="230" tabEnabled="true" tabIndex="2"
+					 text="192.168.1.145"/>
+		<s:Label x="26" y="210" text="SIP Server"/>
+		<s:TextInput id="sipServerTxt" x="25" y="230" width="230" tabEnabled="true" tabIndex="3"
+					 text="192.168.1.145"/>
+		<s:Spacer x="0" y="134" width="100%" height="2"/>
+	</s:Group>
+	<s:HGroup x="0" y="418" width="100%" height="45" gap="1">
+		<s:Button width="50%" label="Cancel" click="onCancel(event)"/>
+		<s:Button width="50%" label="Login" click="onLogin(event)"/>
+	</s:HGroup>
+</s:View>
