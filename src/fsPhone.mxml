@@ -27,8 +27,6 @@
 		
 		import mx.core.FlexGlobals;
 		
-		import views.fsPhoneView;
-		
 		private var username:String;
 		private var password:String;
 		private var sipRealm:String;
@@ -42,17 +40,17 @@
 //		public function login(username:String, password:String, realm:String, server:String, socketPort:String = null, socketPsw:String = null):void
 		public function login(username:String, password:String, realm:String, server:String):void
 		{
-//			this.username = username;
-//			this.password = password;
-//			this.sipRealm = realm;
-//			this.sipServer = server;
-//			
-//			// update internalConfig
-////			if (socketPort)
-////				internalConfig.socketPort = socketPort;
-////			if (socketPsw)
-////				internalConfig.socketPsw = socketPsw;
-//			
+			this.username = username;
+			this.password = password;
+			this.sipRealm = realm;
+			this.sipServer = server;
+			
+			// update internalConfig
+//			if (socketPort)
+//				internalConfig.socketPort = socketPort;
+//			if (socketPsw)
+//				internalConfig.socketPsw = socketPsw;
+			
 			rtmp = new RTMP(username, password, realm, server);
 			rtmp.addEventListener(LogMessageEvent.LOG, receivedLogMessageEvent);
 ////			socketManager = new SocketManager(this.sipServer, internalConfig.socketPort, internalConfig.socketPsw, this.sipRealm);
@@ -69,9 +67,7 @@
 			rtmp.addEventListener(CallConnectedEvent.CONNECTED, callConnectedEvent);
 			rtmp.addEventListener(CallDisconnectedEvent.DISCONNECTED, callDisconnectedEvent);
 			rtmp.addEventListener(MissedCallEvent.CALLMISSED, missedCallEvent);
-			
 			//(new AlertMsg()).open(this, false);
-			
 		}
 		
 		private function receivedLogMessageEvent(event:LogMessageEvent):void
@@ -84,8 +80,6 @@
 				case LogMessageEvent.RTMPLOG:
 					rtmpLogs += message + "\n";
 					dispatchEvent(new Event('update'));
-					//phoneCanvas.rtmpLogBox.text += message + "\n";
-					//phoneCanvas.rtmpLogBox.verticalScrollPosition = phoneCanvas.rtmpLogBox.maxVerticalScrollPosition;
 					break;
 				
 //				case LogMessageEvent.ESLLOG:
@@ -102,28 +96,16 @@
 			var msgType:String = event.msgType;
 			var message:String = event.message;
 			
+			dispatchEvent(event);
 			switch (msgType)
 			{
 				case RtmpMessageEvent.NETSTAUS:
-					
 					if (message == 'Failed to connect to FreeSWITCH')
 					{
-//						phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtFailed');
-//						loginCanvas.visible = true;
-//						phoneCanvas.visible = false;
-//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('phoneCanvas.sTxtFailed'), false);
 					}
 					else if (message == 'Connection success')
 					{
-//						phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtConnected');
-//						loginCanvas.setProgressbar(ResourceUtil.getInstance().getString('phoneCanvas.sTxtConnected'));
-						// Step 3 register to freeswitch after connect to mod_rtmp
 						rtmp.login();
-					}
-					else
-					{
-//						loginCanvas.alertMsgTxt.text = message;
-//						phoneCanvas.statusTxt.text = message;
 					}
 					
 					break;
@@ -205,7 +187,7 @@
 		private function incomingCallEvent(event:IncomingCallEvent):void
 		{
 			trace("incomingCallEvent " + event.uuid + " " + event.number + " " + event.name);
-//			phoneCanvas.incomingCall(event);
+			FlexGlobals.topLevelApplication.navigator.activeView.incomingCall(event);
 		}
 		
 		private function callConnectedEvent(event:CallConnectedEvent):void
@@ -221,7 +203,7 @@
 		private function callDisconnectedEvent(event:CallDisconnectedEvent):void
 		{
 			trace("CallDisconnectedEvent " + event.message);
-//			phoneCanvas.callDisconnected(event);
+			FlexGlobals.topLevelApplication.navigator.activeView.callDisconnected(event);
 		}
 		
 		private function missedCallEvent(event:MissedCallEvent):void

@@ -7,19 +7,26 @@
 		</s:BasicLayout>
 	</s:layout>
 	<fx:Declarations>
-		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import events.RtmpMessageEvent;
+			
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 			
 			import spark.events.ViewNavigatorEvent;
-			
+
+
+			private var progress:Progress = new Progress();
+			private var timer:Timer;
+
+						
 			protected function init(event:ViewNavigatorEvent):void {
-				//mx.core.FlexGlobals.topLevelApplication.viewMenuOpen = true;
+				FlexGlobals.topLevelApplication.addEventListener(RtmpMessageEvent.MESSAGE, rtmpMessageEventHandler);
 			}
-			
+
 			protected function menuKeyPressedHandler(event:FlexEvent):void {
 				//event.preventDefault();
 			}
@@ -30,7 +37,56 @@
 			
 			private function onLogin(event:MouseEvent):void {
 				this.parentApplication.login(sipAccountTxt.text, sipPswTxt.text, sipRealmTxt.text, sipServerTxt.text);
-				navigator.pushView(views.fsPhoneView);
+				this.popIndicator();
+				//navigator.pushView(views.fsPhoneView);
+			}
+
+			private function popIndicator():void
+			{
+				PopUpManager.addPopUp(progress, this, true);
+				PopUpManager.centerPopUp(progress);
+				this.enabled = false;
+				this.alpha = .5;
+				
+				timer = new Timer(3000,1);
+				timer.addEventListener(TimerEvent.TIMER_COMPLETE,timerComplete);
+				timer.start();
+			}
+			
+			private function rtmpMessageEventHandler(event:RtmpMessageEvent):void {
+				var msgType:String = event.msgType;
+				var message:String = event.message;
+				
+				switch (msgType)
+				{
+					case RtmpMessageEvent.NETSTAUS:
+						if (message == 'Failed to connect to FreeSWITCH')
+						{
+						}
+						else if (message == 'Connection success')
+						{
+							timer.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
+							navigator.pushView(views.fsPhoneView);
+						}
+						else
+						{
+							//	loginCanvas.alertMsgTxt.text = message;
+							//	phoneCanvas.statusTxt.text = message;
+						}	
+						break;
+					
+					default:
+				}
+			}
+			
+			private function timerComplete(event:TimerEvent):void {
+				removeIndicator();
+			}
+			
+			private function removeIndicator():void {
+				this.enabled = true;
+				this.alpha = 1;
+				PopUpManager.removePopUp(progress);				
 			}
 
 		]]>
@@ -39,10 +95,10 @@
 		<s:ViewMenuItem label="Cancel" click="onCancel(event)"/>
 		<s:ViewMenuItem label="Login" click="onLogin(event)"/>
 	</s:viewMenuItems>
-	<s:Group x="21" y="57" width="280" height="284">
+	<s:Group x="21" y="40" width="280" height="284">
 		<s:Label x="26" y="10" text="SIP Account"/>
 		<s:TextInput id="sipAccountTxt" x="25" y="30" width="230" tabEnabled="true" tabIndex="0"
-					 text="1001"/>
+					 text="1101"/>
 		<s:Label x="26" y="70" text="Password"/>
 		<s:TextInput id="sipPswTxt" x="25" y="90" width="230" displayAsPassword="true"
 					 tabEnabled="true" tabIndex="1" text="1234"/>

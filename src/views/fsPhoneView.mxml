@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" actionBarVisible="false" creationComplete="init()" title='XXXX'>
+		xmlns:s="library://ns.adobe.com/flex/spark"  actionBarVisible="false" creationComplete="init()">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import events.*;
+			
+			import mx.collections.ArrayCollection;
 			import mx.core.FlexGlobals;
-
+			import mx.managers.PopUpManager;
+			
 			public var netConnection:NetConnection = null;
 			private var incomingNetStream:NetStream = null;
 			private var outgoingNetStream:NetStream = null;
@@ -30,25 +34,64 @@
 			[Embed(source = "assets/dialing.mp3")]
 			private var dialingClass:Class;
 			
+			[Bindable]
+			public var missedCalls:Array;
+			
+			[Bindable]
+			public var receivedCalls:Array;
+			
+			[Bindable]
+			public var dialedCalls:ArrayCollection;
+			
+			private var incomingCallObj:Object;
+			private var dialedCallObj:Object;
+			private var app:dialView;
+			private var ringingbox:ringingBox;
+
+			
 			private function init():void
 			{
-//				this.holdButton.enabled = false;
-//				
-//				//				groupItem = new ArrayCollection();
-//				timer = new Timer(3000, 0);
-//				timer.addEventListener(TimerEvent.TIMER, timerHandler);
-				
+				//				this.holdButton.enabled = false;
+				//				
+				//				//				groupItem = new ArrayCollection();
+				//				timer = new Timer(3000, 0);
+				//				timer.addEventListener(TimerEvent.TIMER, timerHandler);
+				freshInstance();
 				ringSound = new ringingClass();
 				dialSound = new dialingClass();
-//				outgoingSound = new outgoingClass();
-//				errorSound = new errorClass();
+				//				outgoingSound = new outgoingClass();
+				//				errorSound = new errorClass();
 				initMicrophone();
-//				missedCalls = new Array();
-//				receivedCalls = new Array();
-//				dialedCalls = new Array();
-				//this.addEventListener('parentDoSomething', onHeaderBarToldMeTo);
+				missedCalls = new Array();
+				receivedCalls = new Array();
+				dialedCalls = new ArrayCollection();
+				
+				ringingbox = new ringingBox();
+				ringingbox.addEventListener('answer call', rboxAnswerHandler);
+				ringingbox.addEventListener('reject call', rboxRejectHandler);
 			}
-
+			
+			private function rboxAnswerHandler(event:Event):void
+			{
+				this.enabled = true;
+				this.alpha = 1;
+				PopUpManager.removePopUp(ringingbox);	
+				doAccept();
+			}
+			
+			private function rboxRejectHandler(event:Event):void
+			{
+				this.enabled = true;
+				this.alpha = 1;
+				PopUpManager.removePopUp(ringingbox);	
+				doHangUp();
+			}
+			
+			public function freshInstance():void
+			{
+				app = dialV.activeView as dialView;
+			}
+			
 			public function initMicrophone():void
 			{
 				mic = getMicrophone();
@@ -83,7 +126,7 @@
 				
 				return mic;
 			}
-
+			
 			private function micActivityHandler(event:ActivityEvent):void
 			{
 			}
@@ -101,37 +144,37 @@
 				}
 			}
 			
-//			private function toggleMute():void
-//			{
-//				if (isConnected)
-//				{
-//					if (!muted)
-//					{
-//						if (outgoingNetStream != null)
-//						{
-//							outgoingNetStream.close();
-//							outgoingNetStream = null;
-//							micIcon.source = micMute;
-//							muted = true;
-//						}
-//					}
-//					else
-//					{
-//						outgoingNetStream = new NetStream(getNetConnection());
-//						outgoingNetStream.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
-//						outgoingNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
-//						outgoingNetStream.attachAudio(mic);
-//						outgoingNetStream.bufferTime = 0;
-//						outgoingNetStream.publish(publishName, "live");
-//						var custom_obj:Object = new Object();
-//						custom_obj.onPlayStatus = playStatus;
-//						outgoingNetStream.client = custom_obj;
-//						micIcon.source = micActive;
-//						muted = false;
-//					}
-//				}
-//			}
-		
+			//			private function toggleMute():void
+			//			{
+			//				if (isConnected)
+			//				{
+			//					if (!muted)
+			//					{
+			//						if (outgoingNetStream != null)
+			//						{
+			//							outgoingNetStream.close();
+			//							outgoingNetStream = null;
+			//							micIcon.source = micMute;
+			//							muted = true;
+			//						}
+			//					}
+			//					else
+			//					{
+			//						outgoingNetStream = new NetStream(getNetConnection());
+			//						outgoingNetStream.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
+			//						outgoingNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+			//						outgoingNetStream.attachAudio(mic);
+			//						outgoingNetStream.bufferTime = 0;
+			//						outgoingNetStream.publish(publishName, "live");
+			//						var custom_obj:Object = new Object();
+			//						custom_obj.onPlayStatus = playStatus;
+			//						outgoingNetStream.client = custom_obj;
+			//						micIcon.source = micActive;
+			//						muted = false;
+			//					}
+			//				}
+			//			}
+			
 			private function getNetConnection():NetConnection
 			{
 				return netConnection;
@@ -151,7 +194,7 @@
 			{
 				this.publishName = publishName;
 			}
-
+			
 			public function callConnected(netConnection:NetConnection, playName:String, publishName:String):void
 			{
 				isConnected = true;
@@ -180,27 +223,26 @@
 				incomingNetStream.play(playName);
 				outgoingNetStream.publish(publishName, "live");
 				
-				var app:dialView = dialV.activeView as dialView;
-				app.setEnd();
+				app.setBtn('end');
 				
-//				volSlider.enabled = true;
-//				micSlider.enabled = true;
-//				
-//				pickupButton.visible = false;
-//				dialButton.enabled = false;
-//				
-//				if (isConference)
-//				{
-//					transferButton.visible = false;
-//					holdButton.visible = false;
-//				}
-//				else
-//				{
-//					transferButton.visible = true;
-//				}
-//				
-//				indicatorIcon.source = green;
-//				startTimer();
+				app.volGroup.visible = true;
+				app.micGroup.visible = true;
+				//				
+				//				pickupButton.visible = false;
+				//				dialButton.enabled = false;
+				//				
+				//				if (isConference)
+				//				{
+				//					transferButton.visible = false;
+				//					holdButton.visible = false;
+				//				}
+				//				else
+				//				{
+				//					transferButton.visible = true;
+				//				}
+				//				
+				//				indicatorIcon.source = green;
+				//				startTimer();
 				
 				if (isDialing)
 				{
@@ -210,9 +252,91 @@
 				
 			}
 			
+			public function callDisconnected(event:CallDisconnectedEvent):void
+			{
+				if (incomingNetStream != null)
+				{
+					incomingNetStream.play(false);
+				}
+				if (outgoingNetStream != null)
+				{
+					outgoingNetStream.attachAudio(null);
+					outgoingNetStream.close();
+				}
+				
+				isConnected = false;
+				//				if (isConference)
+				//				{
+				//					
+				//					if (vbox2.visible)
+				//					{
+				//						toggleConferenceList();
+				//					}
+				//					
+				//					if (conferences.length > 0)
+				//						conferences.removeItemAt(conferences.length - 1);
+				//					isConference = false;
+				//				}
+				//				dialButton.enabled = true;
+				//				clearButton.enabled = false;
+				//				transferButton.visible = false;
+				//				holdButton.visible = false;
+				//				pickupButton.visible = false;
+				//				curCall = '';
+				//				
+				app.volGroup.visible = false;
+				app.micGroup.visible = false;
+				if (event.message != "onUaCallFailed")
+				{
+					//					statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtHangup');
+				}
+				else
+				{
+					//					statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtCallfailed');
+				}
+				//				indicatorIcon.source = gray;
+				//				stopTimer();
+				
+				if (isRinging)
+				{
+					ringChannel.stop();
+					isRinging = false;
+				}
+				//				if (muted)
+				//				{
+				//					micIcon.source = micActive;
+				//				}
+				if (isDialing)
+				{
+					dialChannel.stop();
+					isDialing = false;
+				}
+			}
+			
+			public function incomingCall(event:IncomingCallEvent):void
+			{
+				//				statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtIncoming') + (event.name == "" ? event.number : event.name);
+				//				pickupButton.visible = true;
+				//				dialButton.enabled = false;
+				//				clearButton.enabled = true;
+				//				indicatorIcon.source = red;
+				if (!isRinging)
+				{
+					ringChannel = ringSound.play();
+					isRinging = true;
+				}
+				//app.setBtn('answer');
+				popRingBox();
+				app.setDialnumTxt(event.number);
+				incomingCallObj = new Object();
+				incomingCallObj.label = event.name;
+				incomingCallObj.data = event.number;
+				incomingCallObj.uuid = event.uuid;
+				incomingCallObj.time = new Date().toString();
+			}
+			
 			private function netStatus(evt:NetStatusEvent):void
 			{
-				
 				switch (evt.info.code)
 				{
 					
@@ -253,32 +377,89 @@
 				//var dialNum:String = FlexGlobals.topLevelApplication.fsPhoneView.dialNumTxt.text;
 				parentApplication.rtmp.doCall(dialNum);
 				// HARDCODE here!!! Check if the connection is a conference call
-//				if (int(dialnumTxt.text) >= 3000 && int(dialnumTxt.text) < 4000)
-//					isConference = true;
-//				
-//				dialButton.enabled = false;
-//				clearButton.enabled = true;
-//				indicatorIcon.source = green;
-//				statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtCalling');
+				//				if (int(dialnumTxt.text) >= 3000 && int(dialnumTxt.text) < 4000)
+				//					isConference = true;
+				//				
+				//				dialButton.enabled = false;
+				//				clearButton.enabled = true;
+				//				indicatorIcon.source = green;
+				//				statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtCalling');
 				if (!isDialing)
 				{
 					dialChannel = dialSound.play(0, 10);
 					isDialing = true;
 				}
-//				if (dialedCalls.length >= 10)
-//				{
-//					dialedCalls.pop();
-//				}
-//				dialedCallObj = new Object();
-//				dialedCallObj.data = dialNum;
-//				dialedCallObj.label = dialNum;
-//				dialedCallObj.time = new Date().toString();
-//				dialedCalls.unshift(dialedCallObj);
-//				curCall = dialedCallObj.label;
+				//				if (dialedCalls.length >= 10)
+				//				{
+				//					dialedCalls.pop();
+				//				}
+								dialedCallObj = new Object();
+								//dialedCallObj.data = dialNum;
+								dialedCallObj.label = dialNum;
+								dialedCallObj.time = new Date().toString();
+								dialedCalls.addItemAt(dialedCallObj, 0);
+				//				curCall = dialedCallObj.label;
 			}
 			
 			public function doHangUp():void {
 				parentApplication.rtmp.doHangUp();
+				
+				app.volGroup.visible = false;
+				app.micGroup.visible = false;
+				app.setBtn('call');
+				
+				if (isDialing)
+				{
+					dialChannel.stop();
+					isDialing = false;
+				}
+				if (isRinging)
+				{
+					ringChannel.stop();
+					isRinging = false;
+				}
+			}
+			
+			public function doAccept():void
+			{
+				parentApplication.rtmp.doAccept(incomingCallObj.uuid);
+				//				curCall = incomingCallObj.name;
+				
+				if (isRinging)
+				{
+					ringChannel.stop();
+					isRinging = false;
+				}
+				
+				if (receivedCalls.length >= 10)
+				{
+					receivedCalls.pop();
+				}
+				receivedCalls.unshift(incomingCallObj);
+				
+				//				dialButton.enabled = false;
+				
+			}
+			
+			public function changeVolume(event:Event):void
+			{
+				var st:SoundTransform = incomingNetStream.soundTransform;
+				
+				st.volume = (app.volSlider.value) * .01;
+				incomingNetStream.soundTransform = st;
+			}
+			
+			public function changeMicVolume(event:Event):void
+			{
+				mic.gain = (app.micSlider.value)
+			}
+			
+			private function popRingBox():void
+			{
+				PopUpManager.addPopUp(ringingbox, this, true);
+				PopUpManager.centerPopUp(ringingbox);
+				this.enabled = false;
+				this.alpha = .5;
 			}
 		]]>
 	</fx:Script>

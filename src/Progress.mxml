@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" width="300" height="300" creationComplete="init();">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import events.RtmpMessageEvent;
+			
+			import mx.core.FlexGlobals;
+
+			private function init():void {
+				FlexGlobals.topLevelApplication.addEventListener(RtmpMessageEvent.MESSAGE, showHint);
+			}
+			
+			private function showHint(event:RtmpMessageEvent):void {
+				var message:String = event.message;
+				hint.text = message;
+			}
+		]]>
+	</fx:Script>
+	<s:BusyIndicator id="indicator" height="150" width="150"
+					 verticalCenter="0"
+					 horizontalCenter="0" 
+					 symbolColor="black"/>
+	<s:Label id="hint" x="72" y="275" text="Loging to freeSWITCH"/>
+</s:Group>

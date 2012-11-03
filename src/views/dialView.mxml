@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="dialView">
+		xmlns:s="library://ns.adobe.com/flex/spark" title="dialView" creationComplete="init()">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			[Bindable]
+			[Embed(source = "assets/record.png")]
+			public var cassetteCls:Class;
+			[Bindable]
+			[Embed(source = "assets/backspace.png")]
+			public var backspaceCls:Class;
+			
+			[Embed(source = "assets/microphone.png")]
+			public const micActive:Class;
+			
+			[Embed(source = "assets/icon_phone-mute_16x16.png")]
+			public const micMute:Class;
+			
+			[Embed(source = "assets/icon_speaker_16x16.png")]
+			public const speaker:Class;
+			
 			static private var tmpChr:String;
 			static private var keyTimestamp:Date;
 			static private var keyCount:int = 0;
 			private const KEY_INTERVAL:int = 300;
 			private const KEY_TABLE:Object = {'2':"ABC", '3':"DEF", '4':"GHI", '5':"JKL", '6':"MNO", '7':"PQRS", '8':"TUV", '9':"WXYZ"};
 
+			private function init():void {
+				parentDocument.freshInstance();
+			}
 			private function doCallChar(chr:String):void {
 				if (chr == tmpChr && (null != KEY_TABLE[chr]) && (((new Date()).time - keyTimestamp.time) < KEY_INTERVAL))
 				{
@@ -45,19 +65,28 @@
 			private function onCall():void {
 				if (callBtn.label == 'call')
 					parentDocument.doCall(dialnumTxt.text);
-				else
+				else if (callBtn.label == 'end')
 					parentDocument.doHangUp();
+				else if (callBtn.label == 'answer')
+					parentDocument.doAccept();
 			}
-			public function setEnd():void {
-				callBtn.label = 'end';
-				
+			
+			public function setBtn(label:String):void {
+				callBtn.label = label;			
 			}
+			
+			public function setDialnumTxt(text:String):void {
+				dialnumTxt.text = text;			
+			}
+			
 		]]>
 	</fx:Script>
 	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false"/>
 	<s:HGroup x="0" y="62" width="100%" horizontalAlign="center">
-		<s:VGroup height="339" horizontalAlign="center" verticalAlign="middle">
-			<s:VSlider height="60%" width="15" />			
+		<s:VGroup id="volGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="false">
+			<s:VSlider id="volSlider" minimum="0" maximum="100" value="40" height="60%" width="15" liveDragging="true" thumbDrag="parentDocument.changeVolume(event)"/>	
+			<s:Image width="16" height="16" source='{speaker}'/>
+			
 		</s:VGroup>
 	<s:VGroup  width="80%" height="339" gap="0" horizontalAlign="center" verticalAlign="middle">
 		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
@@ -81,13 +110,14 @@
 			<s:Button width="31%" label="#" click="doCallChar('#')"/>
 		</s:HGroup>
 		<s:HGroup width="260" height="50" gap="0" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="25%" label="record"/>
+			<s:Button width="25%" height='{callBtn.height}' icon="{cassetteCls}"/>
 			<s:Button id='callBtn' width="40%" label="call" click="onCall()"/>
-			<s:Button width="25%" label="backspace" click="onBackspace()"/>
+			<s:Button width="25%" height='{callBtn.height}' click="onBackspace()" icon="{backspaceCls}"/>
 		</s:HGroup>
 	</s:VGroup>
-		<s:VGroup height="339" horizontalAlign="center" verticalAlign="middle">
-			<s:VSlider height="60%" width="15" />			
+		<s:VGroup id="micGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="false">
+			<s:VSlider id="micSlider" minimum="0" maximum="100" value="40" height="60%" width="15" liveDragging="true" thumbDrag="parentDocument.changeMicVolume(event)" />		
+			<s:Image width="16" height="16" source='{micActive}'/>
 		</s:VGroup>
 	</s:HGroup>
 </s:View>
