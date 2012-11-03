@@ -16,8 +16,6 @@
 	</fx:Declarations>
 <fx:Script>
 	<![CDATA[
-		import mx.core.FlexGlobals;
-		
 		import com.FreeSWITCH.XML.CUSTOM.Conference_event;
 		import com.FreeSWITCH.XML.ESL_event;
 		import com.FreeSWITCH.rtmp.RTMP;
@@ -26,6 +24,8 @@
 		import events.*;
 		
 		import flash.utils.flash_proxy;
+		
+		import mx.core.FlexGlobals;
 		
 		import views.fsPhoneView;
 		
@@ -36,6 +36,8 @@
 		
 		public var rtmp:RTMP = null;
 		public var socketManager:SocketManager = null;
+		[Bindable]
+		public var rtmpLogs:String;
 		
 //		public function login(username:String, password:String, realm:String, server:String, socketPort:String = null, socketPsw:String = null):void
 		public function login(username:String, password:String, realm:String, server:String):void
@@ -77,20 +79,22 @@
 			var msgType:String = event.msgType;
 			var message:String = event.message;
 			
-//			switch (msgType)
-//			{
-//				case LogMessageEvent.RTMPLOG:
-//					phoneCanvas.rtmpLogBox.text += message + "\n";
-//					phoneCanvas.rtmpLogBox.verticalScrollPosition = phoneCanvas.rtmpLogBox.maxVerticalScrollPosition;
-//					break;
-//				
+			switch (msgType)
+			{
+				case LogMessageEvent.RTMPLOG:
+					rtmpLogs += message + "\n";
+					dispatchEvent(new Event('update'));
+					//phoneCanvas.rtmpLogBox.text += message + "\n";
+					//phoneCanvas.rtmpLogBox.verticalScrollPosition = phoneCanvas.rtmpLogBox.maxVerticalScrollPosition;
+					break;
+				
 //				case LogMessageEvent.ESLLOG:
 //					phoneCanvas.eslLogBox.text += message + "\n";
 //					phoneCanvas.eslLogBox.verticalScrollPosition = phoneCanvas.eslLogBox.maxVerticalScrollPosition;
 //					break;
-//				
-//				default:
-//			}
+				
+				default:
+			}
 		}
 		
 		private function receivedRtmpMessageEvent(event:RtmpMessageEvent):void

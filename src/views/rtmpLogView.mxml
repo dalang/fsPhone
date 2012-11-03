@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="rtmpLogView"  creationComplete="init();" actionBarVisible="false">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			
+			private function init():void {
+				rtmpLogBox.appendText("\n");
+				FlexGlobals.topLevelApplication.addEventListener('update', onChanged); //Flex 4
+			}
+			
+			private function onChanged(evt:Event):void {
+				rtmpLogBox.appendText("\n");
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:TextArea id="rtmpLogBox" x="10" y="60" text="{FlexGlobals.topLevelApplication.rtmpLogs}" height="{this.navigator.height - 120}" />
+</s:View>

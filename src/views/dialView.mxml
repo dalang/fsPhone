@@ -9,7 +9,7 @@
 			static private var tmpChr:String;
 			static private var keyTimestamp:Date;
 			static private var keyCount:int = 0;
-			private const KEY_INTERVAL:int = 500;
+			private const KEY_INTERVAL:int = 300;
 			private const KEY_TABLE:Object = {'2':"ABC", '3':"DEF", '4':"GHI", '5':"JKL", '6':"MNO", '7':"PQRS", '8':"TUV", '9':"WXYZ"};
 
 			private function doCallChar(chr:String):void {
@@ -32,6 +32,11 @@
 				keyTimestamp = new Date();
 			}
 			
+			private function onBackspace():void {
+				if (dialnumTxt.text.length > 0)
+					dialnumTxt.text = dialnumTxt.text.substr(0, dialnumTxt.text.length - 1);
+			}
+			
 			private function doCall():void {
 				this.addEventListener('doCall', onCall);
 				dispatchEvent(new Event('doCall'));
@@ -50,32 +55,39 @@
 		]]>
 	</fx:Script>
 	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false"/>
-	<s:VGroup x="0" y="62" width="320" height="339" gap="0" horizontalAlign="center"
-			  verticalAlign="middle">
-		<s:HGroup width="300" height="60" gap="12" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="30%" label="1" click="doCallChar('1')"/>
-			<s:Button width="30%" label="2 ABC" click="doCallChar('2')"/>
-			<s:Button width="30%" label="3 DEF" click="doCallChar('3')"/>
+	<s:HGroup x="0" y="62" width="100%" horizontalAlign="center">
+		<s:VGroup height="339" horizontalAlign="center" verticalAlign="middle">
+			<s:VSlider height="60%" width="15" />			
+		</s:VGroup>
+	<s:VGroup  width="80%" height="339" gap="0" horizontalAlign="center" verticalAlign="middle">
+		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
+			<s:Button width="31%" label="1" click="doCallChar('1')"/>
+			<s:Button width="31%" label="2 ABC" click="doCallChar('2')"/>
+			<s:Button width="31%" label="3 DEF" click="doCallChar('3')"/>
 		</s:HGroup>
-		<s:HGroup width="300" height="60" gap="12" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="30%" label="4 GHI" click="doCallChar('4')"/>
-			<s:Button width="30%" label="5 JKL" click="doCallChar('5')"/>
-			<s:Button width="30%" label="6 MNO" click="doCallChar('6')"/>
+		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
+			<s:Button width="31%" label="4 GHI" click="doCallChar('4')"/>
+			<s:Button width="31%" label="5 JKL" click="doCallChar('5')"/>
+			<s:Button width="31%" label="6 MNO" click="doCallChar('6')"/>
 		</s:HGroup>
-		<s:HGroup width="300" height="60" gap="12" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="30%" label="7 PQRS" click="doCallChar('7')"/>
-			<s:Button width="30%" label="8 TUV" click="doCallChar('8')"/>
-			<s:Button width="30%" label="9 WXYZ" click="doCallChar('9')"/>
+		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
+			<s:Button width="31%" label="7 PQRS" click="doCallChar('7')"/>
+			<s:Button width="31%" label="8 TUV" click="doCallChar('8')"/>
+			<s:Button width="31%" label="9 WXYZ" click="doCallChar('9')"/>
 		</s:HGroup>
-		<s:HGroup width="300" height="60" gap="12" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="30%" label="*" click="doCallChar('*')"/>
-			<s:Button width="30%" label="0 +" click="doCallChar('0')"/>
-			<s:Button width="30%" label="#" click="doCallChar('#')"/>
+		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
+			<s:Button width="31%" label="*" click="doCallChar('*')"/>
+			<s:Button width="31%" label="0 +" click="doCallChar('0')"/>
+			<s:Button width="31%" label="#" click="doCallChar('#')"/>
 		</s:HGroup>
-		<s:HGroup width="300" height="60" gap="0" horizontalAlign="center" verticalAlign="middle">
+		<s:HGroup width="260" height="50" gap="0" horizontalAlign="center" verticalAlign="middle">
 			<s:Button width="25%" label="record"/>
 			<s:Button id='callBtn' width="40%" label="call" click="onCall()"/>
-			<s:Button width="25%" label="backspace"/>
+			<s:Button width="25%" label="backspace" click="onBackspace()"/>
 		</s:HGroup>
 	</s:VGroup>
+		<s:VGroup height="339" horizontalAlign="center" verticalAlign="middle">
+			<s:VSlider height="60%" width="15" />			
+		</s:VGroup>
+	</s:HGroup>
 </s:View>

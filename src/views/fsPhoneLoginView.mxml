@@ -54,7 +54,7 @@
 					 text="192.168.1.145"/>
 		<s:Spacer x="0" y="134" width="100%" height="2"/>
 	</s:Group>
-	<s:HGroup x="0" y="418" width="100%" height="45" gap="1">
+	<s:HGroup id='hgroup' x="0" y="{this.height - this.hgroup.height}" width="100%" height="45" gap="1" verticalAlign="bottom">
 		<s:Button width="50%" label="Cancel" click="onCancel(event)"/>
 		<s:Button width="50%" label="Login" click="onLogin(event)"/>
 	</s:HGroup>
