@@ -139,12 +139,6 @@
 			[Embed(source = "assets/dtmf/star.mp3")]
 			public const dtmfStar:Class;
 			
-			[Embed(source = "assets/ringing.mp3")]
-			private var ringingClass:Class;
-			
-			[Embed(source = "assets/dialing.mp3")]
-			private var dialingClass:Class;
-			
 			static private var tmpChr:String;
 			static private var keyTimestamp:Date;
 			static private var keyCount:int = 0;
