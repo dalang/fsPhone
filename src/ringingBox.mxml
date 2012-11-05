@@ -16,6 +16,14 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Button x="10" y="21" width="100" label="Answer" click="onAnswer()" />
-	<s:Button x="156" y="21" width="100" label="Reject" click="onReject()"/>
+	<s:Rect width='100%' height="100%">
+		<s:stroke>
+			<s:SolidColorStroke color='0x000000' weight="2"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0x666666" />
+		</s:fill>
+	</s:Rect>
+	<s:Button x="10" y="21" width="100" label="Answer" click="onAnswer()" chromeColor="0x33cc00"/>
+	<s:Button x="156" y="21" width="100" label="Reject" click="onReject()" chromeColor="0xFF0000"/>
 </s:Group>

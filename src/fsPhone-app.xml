@@ -245,7 +245,7 @@
 			    <!--<uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>-->
 			    <!--<uses-permission android:name="android.permission.WAKE_LOCK"/>-->
 			    <!--<uses-permission android:name="android.permission.CAMERA"/>-->
-			    <!--<uses-permission android:name="android.permission.RECORD_AUDIO"/>-->
+			    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 			    <!--应同时切换 ACCESS_NETWORK_STATE 和 ACCESS_WIFI_STATE 权限，才能使用 AIR
 		的 NetworkInfo API-->
 			    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>-->

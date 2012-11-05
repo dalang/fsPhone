@@ -8,6 +8,8 @@
 		<![CDATA[
 			import events.*;
 			
+			import model.*;
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
@@ -17,7 +19,7 @@
 			private var outgoingNetStream:NetStream = null;
 			private var publishName:String = null;
 			private var mic:Microphone = null;
-			private var isConnected:Boolean = false;
+			//private var isConnected:Boolean = false;
 			private var isRinging:Boolean = false;
 			private var isDialing:Boolean = false;
 			private var ringSound:Sound = null;
@@ -42,6 +44,9 @@
 			
 			[Bindable]
 			public var dialedCalls:ArrayCollection;
+			
+			[Bindable]
+			public var dialBuffer:DialBuffer = new DialBuffer();
 			
 			private var incomingCallObj:Object;
 			private var dialedCallObj:Object;
@@ -197,7 +202,7 @@
 			
 			public function callConnected(netConnection:NetConnection, playName:String, publishName:String):void
 			{
-				isConnected = true;
+				dialBuffer.isConnected = true;
 				
 				setNetConnection(netConnection);
 				setPublishName(publishName);
@@ -264,7 +269,7 @@
 					outgoingNetStream.close();
 				}
 				
-				isConnected = false;
+				dialBuffer.isConnected = false;
 				//				if (isConference)
 				//				{
 				//					
@@ -471,7 +476,7 @@
 	
 	<s:TabbedViewNavigator width="100%" height="100%">
 		<s:ViewNavigator id='dialV' label="Dial" width="100%" height="100%" 
-						 firstView="views.dialView"/>
+						 firstView="views.dialView" firstViewData="{dialBuffer}" />
 		<s:ViewNavigator label="History" width="100%" height="100%" 						 
 						 firstView="views.historyView"/>
 		<s:ViewNavigator label="Logs" width="100%" height="100%" 						 

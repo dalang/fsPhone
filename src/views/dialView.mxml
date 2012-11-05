@@ -1,15 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="dialView" creationComplete="init()">
+		xmlns:mx="library://ns.adobe.com/flex/mx" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="dialView" creationComplete="init()" viewActivate="dialV_activateHandler(event)">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		
+		<mx:SoundEffect id="dtmfOne"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf1}"/>
+		<mx:SoundEffect id="dtmfTwo"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf2}"/>
+		<mx:SoundEffect id="dtmfThree"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf3}"/>
+		<mx:SoundEffect id="dtmfFour"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf4}"/>
+		<mx:SoundEffect id="dtmfFive"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf5}"/>
+		<mx:SoundEffect id="dtmfSix"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf6}"/>
+		<mx:SoundEffect id="dtmfSeven"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf7}"/>
+		<mx:SoundEffect id="dtmfEight"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf8}"/>
+		<mx:SoundEffect id="dtmfNine"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf9}"/>
+		<mx:SoundEffect id="dtmfZero"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmf0}"/>
+		<mx:SoundEffect id="dtmfHashEffect"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmfHash}"/>
+		<mx:SoundEffect id="dtmfStarEffect"
+						target="{this}"
+						useDuration="true"
+						duration="650"
+						autoLoad="true"
+						source="{dtmfStar}"/>
+
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import model.DialBuffer;
+			[Bindable]
+			protected var dialBuffer:DialBuffer;
+			
 			[Bindable]
 			[Embed(source = "assets/record.png")]
 			public var cassetteCls:Class;
+			
 			[Bindable]
 			[Embed(source = "assets/backspace.png")]
 			public var backspaceCls:Class;
@@ -23,20 +103,73 @@
 			[Embed(source = "assets/icon_speaker_16x16.png")]
 			public const speaker:Class;
 			
+			[Embed(source = "assets/dtmf/0.mp3")]
+			public const dtmf0:Class;
+			
+			[Embed(source = "assets/dtmf/1.mp3")]
+			public const dtmf1:Class;
+			
+			[Embed(source = "assets/dtmf/2.mp3")]
+			public const dtmf2:Class;
+			
+			[Embed(source = "assets/dtmf/3.mp3")]
+			public const dtmf3:Class;
+			
+			[Embed(source = "assets/dtmf/4.mp3")]
+			public const dtmf4:Class;
+			
+			[Embed(source = "assets/dtmf/5.mp3")]
+			public const dtmf5:Class;
+			
+			[Embed(source = "assets/dtmf/6.mp3")]
+			public const dtmf6:Class;
+			
+			[Embed(source = "assets/dtmf/7.mp3")]
+			public const dtmf7:Class;
+			
+			[Embed(source = "assets/dtmf/8.mp3")]
+			public const dtmf8:Class;
+			
+			[Embed(source = "assets/dtmf/9.mp3")]
+			public const dtmf9:Class;
+			
+			[Embed(source = "assets/dtmf/hash.mp3")]
+			public const dtmfHash:Class;
+			
+			[Embed(source = "assets/dtmf/star.mp3")]
+			public const dtmfStar:Class;
+			
+			[Embed(source = "assets/ringing.mp3")]
+			private var ringingClass:Class;
+			
+			[Embed(source = "assets/dialing.mp3")]
+			private var dialingClass:Class;
+			
 			static private var tmpChr:String;
 			static private var keyTimestamp:Date;
 			static private var keyCount:int = 0;
 			private const KEY_INTERVAL:int = 300;
-			private const KEY_TABLE:Object = {'2':"ABC", '3':"DEF", '4':"GHI", '5':"JKL", '6':"MNO", '7':"PQRS", '8':"TUV", '9':"WXYZ"};
+			private const KEY_TABLE:Object = {'2':"ABC", '3':"DEF", '4':"GHI", '5':"JKL", '6':"MNO", '7':"PQRS", '8':"TUV", '9':"WXYZ", '0':"+"};
 
 			private function init():void {
 				parentDocument.freshInstance();
 			}
+			
+			protected function dialV_activateHandler(event:Event):void
+			{
+				this.dialBuffer = data as DialBuffer;
+				
+				if (dialBuffer.isConnected)
+					setBtn('end');
+				else
+					setBtn('call');
+			}
+			
 			private function doCallChar(chr:String):void {
 				if (chr == tmpChr && (null != KEY_TABLE[chr]) && (((new Date()).time - keyTimestamp.time) < KEY_INTERVAL))
 				{
 					var tmp:String;
-					keyCount = (keyCount + 1) % KEY_TABLE[chr].length;
+					keyCount = (keyCount + 1) % (KEY_TABLE[chr].length + 1);
 					if (keyCount > 0)
 						tmp = KEY_TABLE[chr].charAt(keyCount - 1)
 					else
@@ -72,7 +205,11 @@
 			}
 			
 			public function setBtn(label:String):void {
-				callBtn.label = label;			
+				callBtn.label = label;
+				if (callBtn.label == 'call')
+					callBtn.setStyle('chromeColor', "0x33cc00");
+				else if (callBtn.label == 'end')
+					callBtn.setStyle('chromeColor', "0xFF0000");
 			}
 			
 			public function setDialnumTxt(text:String):void {
@@ -81,41 +218,41 @@
 			
 		]]>
 	</fx:Script>
-	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false"/>
+	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false" text="@{dialBuffer.dialnum}"/>
 	<s:HGroup x="0" y="62" width="100%" horizontalAlign="center">
-		<s:VGroup id="volGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="false">
+		<s:VGroup id="volGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="@{dialBuffer.isConnected}">
 			<s:VSlider id="volSlider" minimum="0" maximum="100" value="40" height="60%" width="15" liveDragging="true" thumbDrag="parentDocument.changeVolume(event)"/>	
 			<s:Image width="16" height="16" source='{speaker}'/>
 			
 		</s:VGroup>
-	<s:VGroup  width="80%" height="339" gap="0" horizontalAlign="center" verticalAlign="middle">
+	<s:VGroup  width="80%" height="339" gap="0" horizontalAlign="center" verticalAlign="top">
 		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="31%" label="1" click="doCallChar('1')"/>
-			<s:Button width="31%" label="2 ABC" click="doCallChar('2')"/>
-			<s:Button width="31%" label="3 DEF" click="doCallChar('3')"/>
+			<s:Button width="31%" label="1" click="doCallChar('1')" mouseDownEffect="{dtmfOne}"/>
+			<s:Button width="31%" label="2 ABC" click="doCallChar('2')" mouseDownEffect="{dtmfTwo}"/>
+			<s:Button width="31%" label="3 DEF" click="doCallChar('3')" mouseDownEffect="{dtmfThree}"/>
 		</s:HGroup>
 		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="31%" label="4 GHI" click="doCallChar('4')"/>
-			<s:Button width="31%" label="5 JKL" click="doCallChar('5')"/>
-			<s:Button width="31%" label="6 MNO" click="doCallChar('6')"/>
+			<s:Button width="31%" label="4 GHI" click="doCallChar('4')" mouseDownEffect="{dtmfFour}"/>
+			<s:Button width="31%" label="5 JKL" click="doCallChar('5')" mouseDownEffect="{dtmfFive}"/>
+			<s:Button width="31%" label="6 MNO" click="doCallChar('6')" mouseDownEffect="{dtmfSix}"/>
 		</s:HGroup>
 		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="31%" label="7 PQRS" click="doCallChar('7')"/>
-			<s:Button width="31%" label="8 TUV" click="doCallChar('8')"/>
-			<s:Button width="31%" label="9 WXYZ" click="doCallChar('9')"/>
+			<s:Button width="31%" label="7 PQRS" click="doCallChar('7')" mouseDownEffect="{dtmfSeven}"/>
+			<s:Button width="31%" label="8 TUV" click="doCallChar('8')" mouseDownEffect="{dtmfEight}"/>
+			<s:Button width="31%" label="9 WXYZ" click="doCallChar('9')" mouseDownEffect="{dtmfNine}"/>
 		</s:HGroup>
 		<s:HGroup width="260" height="50" gap="5" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="31%" label="*" click="doCallChar('*')"/>
-			<s:Button width="31%" label="0 +" click="doCallChar('0')"/>
-			<s:Button width="31%" label="#" click="doCallChar('#')"/>
+			<s:Button width="31%" label="*" click="doCallChar('*')" mouseDownEffect="{dtmfStarEffect}"/>
+			<s:Button width="31%" label="0 +" click="doCallChar('0')" mouseDownEffect="{dtmfZero}"/>
+			<s:Button width="31%" label="#" click="doCallChar('#')" mouseDownEffect="{dtmfHashEffect}"/>
 		</s:HGroup>
 		<s:HGroup width="260" height="50" gap="0" horizontalAlign="center" verticalAlign="middle">
-			<s:Button width="25%" height='{callBtn.height}' icon="{cassetteCls}"/>
-			<s:Button id='callBtn' width="40%" label="call" click="onCall()"/>
-			<s:Button width="25%" height='{callBtn.height}' click="onBackspace()" icon="{backspaceCls}"/>
+			<s:Button width="45" height='{callBtn.height}' icon="{cassetteCls}" chromeColor="0x333333" />
+			<s:Button id='callBtn' width="40%" label="call" click="onCall()" chromeColor="0x33cc00"/>
+			<s:Button width="45" height='{callBtn.height}' icon="{backspaceCls}" chromeColor="0x333333" autoRepeat="true" buttonDown="onBackspace()"/>
 		</s:HGroup>
 	</s:VGroup>
-		<s:VGroup id="micGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="false">
+		<s:VGroup id="micGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="@{dialBuffer.isConnected}">
 			<s:VSlider id="micSlider" minimum="0" maximum="100" value="40" height="60%" width="15" liveDragging="true" thumbDrag="parentDocument.changeMicVolume(event)" />		
 			<s:Image width="16" height="16" source='{micActive}'/>
 		</s:VGroup>
