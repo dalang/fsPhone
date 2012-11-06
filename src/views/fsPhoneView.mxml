@@ -74,6 +74,31 @@
 				ringingbox = new ringingBox();
 				ringingbox.addEventListener('answer call', rboxAnswerHandler);
 				ringingbox.addEventListener('reject call', rboxRejectHandler);
+				FlexGlobals.topLevelApplication.addEventListener(IndicatorEvent.STATUS, indicatorHandler);
+			}
+			
+			private function indicatorHandler(event:IndicatorEvent):void
+			{
+				var message:String = event.message;
+				
+				switch (message)
+				{
+					case IndicatorEvent.IDLE:
+						indicator.source = "@Embed('assets/green.png')";
+						break;
+					case IndicatorEvent.CALLING:
+						indicator.source = "@Embed('assets/yellow.png')";
+						break;
+					case IndicatorEvent.INCOMMING:
+						indicator.source = "@Embed('assets/red.png')";
+						break;
+					case IndicatorEvent.DISCONNECTED:
+						indicator.source = "@Embed('assets/gray.png')";
+						break;
+					default:
+						break;
+				}
+				
 			}
 			
 			private function rboxAnswerHandler(event:Event):void
@@ -491,6 +516,18 @@
 		<s:ViewMenuItem label="Cancel"/>
 		<s:ViewMenuItem label="Login"/>
 	</s:viewMenuItems>
+	
+	<s:navigationContent>
+		<s:Image id='indicator' source="@Embed('assets/gray.png')" height="32" width="32"/>
+	</s:navigationContent>
+	
+	<s:titleContent>
+		<s:Label id="username" text="{FlexGlobals.topLevelApplication.username}" width="100%" textAlign="center" color="#FFFBFD" fontSize="30"/>
+	</s:titleContent>
+	
+	<s:actionContent>
+		<s:Label height="32" width="32"/>
+	</s:actionContent>
 	
 	<s:TabbedViewNavigator width="100%" height="100%">
 		<s:ViewNavigator id='dialV' label="Dial" width="100%" height="100%" 

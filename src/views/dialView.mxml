@@ -215,7 +215,7 @@
 	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false" text="@{dialBuffer.dialnum}"/>
 	<s:HGroup x="0" y="62" width="100%" horizontalAlign="center">
 		<s:VGroup id="volGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="@{dialBuffer.isConnected}">
-			<s:VSlider id="volSlider" minimum="0" maximum="100" value="40" height="60%" width="15" liveDragging="true" thumbDrag="parentDocument.changeVolume(event)"/>	
+			<s:VSlider id="volSlider" minimum="0" maximum="100" value="40" height="60%" width="18" liveDragging="true" thumbDrag="parentDocument.changeVolume(event)"/>	
 			<s:Image width="16" height="16" source='{speaker}'/>
 			
 		</s:VGroup>
@@ -240,14 +240,14 @@
 			<s:Button width="31%" label="0 +" click="doCallChar('0')" mouseDownEffect="{dtmfZero}"/>
 			<s:Button width="31%" label="#" click="doCallChar('#')" mouseDownEffect="{dtmfHashEffect}"/>
 		</s:HGroup>
-		<s:HGroup width="260" height="50" gap="0" horizontalAlign="center" verticalAlign="middle">
+		<s:HGroup width="260" height="50" gap="12" horizontalAlign="center" verticalAlign="middle">
 			<s:Button width="45" height='{callBtn.height}' icon="{cassetteCls}" chromeColor="0x333333" />
 			<s:Button id='callBtn' width="40%" label="call" click="onCall()" chromeColor="0x33cc00"/>
 			<s:Button width="45" height='{callBtn.height}' icon="{backspaceCls}" chromeColor="0x333333" autoRepeat="true" buttonDown="onBackspace()"/>
 		</s:HGroup>
 	</s:VGroup>
 		<s:VGroup id="micGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="@{dialBuffer.isConnected}">
-			<s:VSlider id="micSlider" minimum="0" maximum="100" value="40" height="60%" width="15" liveDragging="true" thumbDrag="parentDocument.changeMicVolume(event)" />		
+			<s:VSlider id="micSlider" minimum="0" maximum="100" value="40" height="60%" width="20" liveDragging="true" thumbDrag="parentDocument.changeMicVolume(event)" />		
 			<s:Image width="16" height="16" source='{micActive}'/>
 		</s:VGroup>
 	</s:HGroup>

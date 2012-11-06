@@ -27,7 +27,9 @@
 		
 		import mx.core.FlexGlobals;
 		
-		private var username:String;
+		[Bindable]
+		public var username:String;
+		
 		private var password:String;
 		private var sipRealm:String;
 		private var sipServer:String;
@@ -102,6 +104,7 @@
 				case RtmpMessageEvent.NETSTAUS:
 					if (message == 'Failed to connect to FreeSWITCH')
 					{
+						this.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.DISCONNECTED));
 					}
 					else if (message == 'Connection success')
 					{
@@ -188,6 +191,7 @@
 		{
 			trace("incomingCallEvent " + event.uuid + " " + event.number + " " + event.name);
 			FlexGlobals.topLevelApplication.navigator.activeView.incomingCall(event);
+			this.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.INCOMMING));
 		}
 		
 		private function callConnectedEvent(event:CallConnectedEvent):void
@@ -195,6 +199,8 @@
 			trace("CallConnectedEvent " + event.publishName + " " + event.playName);
 //			phoneCanvas.statusTxt.text = ResourceUtil.getInstance().getString('phoneCanvas.sTxtEstablished');
 			FlexGlobals.topLevelApplication.navigator.activeView.callConnected(rtmp.netConnection, event.playName, event.publishName);
+			this.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.CALLING));
+
 			//FlexGlobals.topLevelApplication.navigator.activeView.actionBarVisible = true;
 //			if (phoneCanvas.isConferenceCall())
 //				socketManager.sendConferenceListCmd(phoneCanvas.curCall);
@@ -204,11 +210,12 @@
 		{
 			trace("CallDisconnectedEvent " + event.message);
 			FlexGlobals.topLevelApplication.navigator.activeView.callDisconnected(event);
+			this.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.IDLE));
 		}
 		
 		private function missedCallEvent(event:MissedCallEvent):void
 		{
-			trace("CallDisconnectedEvent " + event.message);
+			trace("missedCallEvent " + event.message);
 //			phoneCanvas.missedCall();
 		}
 

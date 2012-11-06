@@ -10,6 +10,7 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import events.IndicatorEvent;
 			import events.RtmpMessageEvent;
 			
 			import mx.core.FlexGlobals;
@@ -67,6 +68,8 @@
 						{
 							navigator.pushView(views.fsPhoneView);
 							timer.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
+							dispatchEvent(new RtmpMessageEvent(RtmpMessageEvent.MESSAGE, RtmpMessageEvent.CALLSTATE, 'HupCall'));
+							FlexGlobals.topLevelApplication.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.IDLE));
 						}
 						else
 						{
