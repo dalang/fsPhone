@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" xmlns:supportClasses="spark.skins.mobile.supportClasses.*" title="Login" viewActivate="init(event)" menuKeyPressed="menuKeyPressedHandler(event)">
+		xmlns:s="library://ns.adobe.com/flex/spark" xmlns:supportClasses="spark.skins.mobile.supportClasses.*" title="fsPhone" viewActivate="init(event)" menuKeyPressed="menuKeyPressedHandler(event)" backgroundColor="#DDDDDD">
 	<s:layout>
 		<s:BasicLayout>
 			
@@ -65,8 +65,8 @@
 						}
 						else if (message == 'Connection success')
 						{
-							timer.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
 							navigator.pushView(views.fsPhoneView);
+							timer.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
 						}
 						else
 						{
@@ -91,6 +91,24 @@
 
 		]]>
 	</fx:Script>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+
+		s|ActionBar #titleDisplay
+		{
+			color: #FFFDFB;
+			fontSize: 40;
+			fontFamily: "Comic Sans MS";
+		}
+		
+		s|TabbedViewNavigator #tabBar
+		{
+			chromeColor: #008CD4;
+			color: #CCCCCC;
+			iconPlacement:left;
+			textDecoration:underline;
+		}
+	</fx:Style>
 	<s:viewMenuItems>
 		<s:ViewMenuItem label="Cancel" click="onCancel(event)"/>
 		<s:ViewMenuItem label="Login" click="onLogin(event)"/>
@@ -109,9 +127,12 @@
 		<s:TextInput id="sipServerTxt" x="25" y="230" width="230" tabEnabled="true" tabIndex="3"
 					 text="192.168.1.145"/>
 		<s:Spacer x="0" y="134" width="100%" height="2"/>
-	</s:Group>
-	<s:HGroup id='hgroup' x="0" y="{this.height - this.hgroup.height}" width="100%" height="45" gap="1" verticalAlign="bottom">
-		<s:Button width="50%" label="Cancel" click="onCancel(event)"/>
-		<s:Button width="50%" label="Login" click="onLogin(event)"/>
+	<s:HGroup id="hgroup" x="0" y="283" width="280" height="45" gap="20" horizontalAlign="center"
+			  verticalAlign="bottom">
+		<s:Button width="35%" label="Register" click="onCancel(event)"  chromeColor="#37659D" color="#FCFFFF"/>
+		<s:Button width="35%" label="Login" click="onLogin(event)" chromeColor="#F6530A" color="#FCFFFF"/>
 	</s:HGroup>
+	</s:Group>
+	<s:Label x="21" y="{this.height - 20}" width="280" fontSize="12"
+			 text="Copyright © iPeers All Rights Reserved." textAlign="center"/>
 </s:View>

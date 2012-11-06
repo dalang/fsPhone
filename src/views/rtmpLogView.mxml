@@ -18,5 +18,6 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:TextArea id="rtmpLogBox" x="10" y="60" text="{FlexGlobals.topLevelApplication.rtmpLogs}" height="{this.navigator.height - 120}" />
+	<s:TextArea id="rtmpLogBox" x="10" y="60" height="{this.navigator.height - 170}" editable="false"
+				text="{FlexGlobals.topLevelApplication.rtmpLogs}"/>
 </s:View>

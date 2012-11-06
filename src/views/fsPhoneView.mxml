@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark"  actionBarVisible="false" creationComplete="init()">
+		xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="init()">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
@@ -468,7 +468,25 @@
 			}
 		]]>
 	</fx:Script>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
 	
+		s|ActionBar #titleDisplay
+		{
+			color: #FFFDFB;
+			fontSize: 40;
+			fontFamily: "Comic Sans MS";
+		}
+		
+		s|TabbedViewNavigator #tabBar
+		{
+			chromeColor: #008CD4;
+			color: #CCCCCC;
+			fontFamily: "Comic Sans MS";
+			iconPlacement:left;
+			textDecoration:underline;
+		}
+	</fx:Style>
 	<s:viewMenuItems>
 		<s:ViewMenuItem label="Cancel"/>
 		<s:ViewMenuItem label="Login"/>
@@ -476,10 +494,10 @@
 	
 	<s:TabbedViewNavigator width="100%" height="100%">
 		<s:ViewNavigator id='dialV' label="Dial" width="100%" height="100%" 
-						 firstView="views.dialView" firstViewData="{dialBuffer}" />
+						 firstView="views.dialView" firstViewData="{dialBuffer}" icon="@Embed('assets/dialer.png')"/>
 		<s:ViewNavigator label="History" width="100%" height="100%" 						 
-						 firstView="views.historyView"/>
+						 firstView="views.historyView" icon="@Embed('assets/history.png')"/>
 		<s:ViewNavigator label="Logs" width="100%" height="100%" 						 
-						 firstView="views.logsView"/>
+						 firstView="views.logsView" icon="@Embed('assets/log.png')"/>
 	</s:TabbedViewNavigator>
 </s:View>

@@ -94,7 +94,7 @@ public class TabbedViewNavigatorSkin extends MobileSkin
         if (!tabBar)
         {
             tabBar = new ButtonBar();
-            tabBar.id = "tabBar";
+            tabBar.id = "myTabBar";
             tabBar.requireSelection = true;
             addChild(tabBar);
         }
