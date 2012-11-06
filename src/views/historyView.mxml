@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="historyView">
+		xmlns:s="library://ns.adobe.com/flex/spark" title="historyView" viewActivate="reset()">
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayList;
+			
+//			private function init():void {
+//				diallist.dataProvider = parentDocument.dialedCalls;
+//				recievelist.dataProvider = parentDocument.receivedCalls;
+//				misslist.dataProvider = parentDocument.missedCalls;
+//			}
+//			
+			private function reset():void {
+//				diallist.dataProvider = parentDocument.dialedCalls;
+//				recievelist.dataProvider = parentDocument.receivedCalls;
+//				misslist.dataProvider = parentDocument.missedCall;
+				
+				findByName('');
+			}
+
+			private function findByName(index:String):void {
+				var data:ArrayCollection;
+				
+				if (typebar.selectedIndex == 0){
+					data = parentDocument.dialedCalls;	
+				} else if (typebar.selectedIndex == 1) {
+					data = parentDocument.receivedCalls;				
+				} else if (typebar.selectedIndex == 2) {
+					data = parentDocument.missedCalls;		
+				}
+				
+				data.filterFunction = function(item:Object):Boolean {return (item.label.indexOf(index)>-1);};
+				data.refresh();
+				
+				if (typebar.selectedIndex == 0){
+					parentDocument.dialedCalls = data;	
+				} else if (typebar.selectedIndex == 1) {
+					parentDocument.receivedCalls = data;				
+				} else if (typebar.selectedIndex == 2) {
+					parentDocument.missedCalls = data;		
+				}
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -16,14 +53,38 @@
 	</s:titleContent>
 	
 	<s:actionContent>
-		<s:Button icon="@Embed('assets/search.png')"/>
+		<s:Button icon="@Embed('assets/search.png')" click="findByName(key.text)"/>
 	</s:actionContent>
+	<s:ButtonBar id="typebar" requireSelection="true" width="100%" top="0"
+				click="findByName(key.text)">
+		<s:dataProvider>
+			<s:ArrayCollection source="['Dial', 'Recieve', 'Miss']" />
+		</s:dataProvider>
+	</s:ButtonBar>
 	
-	<s:List id="list" top="0" bottom="0" left="0" right="0" 
-			dataProvider="{parentDocument.dialedCalls}" >
+	<s:List id="diallist" top="{typebar.height}" bottom="0" left="0" right="0" 
+			dataProvider="{parentDocument.dialedCalls}" visible="{typebar.selectedIndex == 0}">
 		<s:itemRenderer>
 			<fx:Component>
 				<s:IconItemRenderer label="{parentDocument.dialedCalls.name}" messageField="time">
+				</s:IconItemRenderer>
+			</fx:Component>
+		</s:itemRenderer>
+	</s:List>
+	<s:List id="recievelist" top="{typebar.height}" bottom="0" left="0" right="0" visible="{typebar.selectedIndex == 1}"
+			dataProvider="{parentDocument.receivedCalls}" >
+		<s:itemRenderer>
+			<fx:Component>
+				<s:IconItemRenderer label="{parentDocument.receivedCalls.name}" messageField="time">
+				</s:IconItemRenderer>
+			</fx:Component>
+		</s:itemRenderer>
+	</s:List>
+	<s:List id="misslist" top="{typebar.height}" bottom="0" left="0" right="0" visible="{typebar.selectedIndex == 2}"
+			dataProvider="{parentDocument.missedCalls}" >
+		<s:itemRenderer>
+			<fx:Component>
+				<s:IconItemRenderer label="{parentDocument.missedCalls.name}" messageField="time">
 				</s:IconItemRenderer>
 			</fx:Component>
 		</s:itemRenderer>

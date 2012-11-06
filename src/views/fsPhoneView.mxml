@@ -36,11 +36,27 @@
 			[Embed(source = "assets/dialing.mp3")]
 			private var dialingClass:Class;
 			
-			[Bindable]
-			public var missedCalls:Array;
+			[Embed(source = "assets/gray.png")]
+			public const gray:Class;
+			
+			[Embed(source = "assets/blue.png")]
+			public const blue:Class;
+			
+			[Embed(source = "assets/yellow.png")]
+			public const yellow:Class;
+			
+			
+			[Embed(source = "assets/green.png")]
+			public const green:Class;
+			
+			[Embed(source = "assets/red.png")]
+			public const red:Class;
 			
 			[Bindable]
-			public var receivedCalls:Array;
+			public var missedCalls:ArrayCollection;
+			
+			[Bindable]
+			public var receivedCalls:ArrayCollection;
 			
 			[Bindable]
 			public var dialedCalls:ArrayCollection;
@@ -67,14 +83,15 @@
 				//				outgoingSound = new outgoingClass();
 				//				errorSound = new errorClass();
 				initMicrophone();
-				missedCalls = new Array();
-				receivedCalls = new Array();
+				missedCalls = new ArrayCollection();
+				receivedCalls = new ArrayCollection();
 				dialedCalls = new ArrayCollection();
 				
 				ringingbox = new ringingBox();
 				ringingbox.addEventListener('answer call', rboxAnswerHandler);
 				ringingbox.addEventListener('reject call', rboxRejectHandler);
 				FlexGlobals.topLevelApplication.addEventListener(IndicatorEvent.STATUS, indicatorHandler);
+				FlexGlobals.topLevelApplication.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.IDLE));
 			}
 			
 			private function indicatorHandler(event:IndicatorEvent):void
@@ -84,16 +101,16 @@
 				switch (message)
 				{
 					case IndicatorEvent.IDLE:
-						indicator.source = "@Embed('assets/green.png')";
+						indicator.source = green;
 						break;
 					case IndicatorEvent.CALLING:
-						indicator.source = "@Embed('assets/yellow.png')";
+						indicator.source = red;
 						break;
 					case IndicatorEvent.INCOMMING:
-						indicator.source = "@Embed('assets/red.png')";
+						indicator.source = yellow;
 						break;
 					case IndicatorEvent.DISCONNECTED:
-						indicator.source = "@Embed('assets/gray.png')";
+						indicator.source = gray;
 						break;
 					default:
 						break;
@@ -341,6 +358,13 @@
 					dialChannel.stop();
 					isDialing = false;
 				}
+				
+				if (false == this.enabled)
+				{
+					this.enabled = true;
+					this.alpha = 1;
+					PopUpManager.removePopUp(ringingbox);	
+				}
 			}
 			
 			public function incomingCall(event:IncomingCallEvent):void
@@ -450,6 +474,28 @@
 				}
 			}
 			
+			public function missedCall():void
+			{
+				dialBuffer.isConnected = false;
+//				dialButton.enabled = true;
+//				clearButton.enabled = false;
+//				transferButton.visible = false;
+//				holdButton.visible = false;
+//				pickupButton.visible = false;
+//				indicatorIcon.source = gray;
+				if (isRinging)
+				{
+					ringChannel.stop();
+					isRinging = false;
+				}
+				if (missedCalls.length >= 10)
+				{
+					missedCalls.removeItemAt(missedCalls.length);
+				}
+				missedCalls.addItemAt(incomingCallObj, 0);
+//				missedCallIndicator.source = redFlag;
+			}
+			
 			public function doAccept():void
 			{
 				parentApplication.rtmp.doAccept(incomingCallObj.uuid);
@@ -463,9 +509,9 @@
 				
 				if (receivedCalls.length >= 10)
 				{
-					receivedCalls.pop();
+					receivedCalls.removeItemAt(receivedCalls.length);
 				}
-				receivedCalls.unshift(incomingCallObj);
+				receivedCalls.addItemAt(incomingCallObj,0);
 				
 				//				dialButton.enabled = false;
 				
@@ -513,8 +559,9 @@
 		}
 	</fx:Style>
 	<s:viewMenuItems>
-		<s:ViewMenuItem label="Cancel"/>
-		<s:ViewMenuItem label="Login"/>
+		<s:ViewMenuItem label="Exit" click="NativeApplication.nativeApplication.exit();"/>
+		<s:ViewMenuItem label="Mail to author" click="navigateToURL(new URLRequest('mailto:dongguoxign@crscy.com.cn'));"/>
+		<s:ViewMenuItem label="About" click="(new AboutMsg()).open(this, false);"/>
 	</s:viewMenuItems>
 	
 	<s:navigationContent>

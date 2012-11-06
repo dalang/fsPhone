@@ -3,14 +3,17 @@
 							xmlns:s="library://ns.adobe.com/flex/spark" firstView="views.fsPhoneLoginView" applicationDPI="160">
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
-		<fx:Component className="AlertMsg">
-			<s:SkinnablePopUpContainer x="70" y="300">
-				<s:TitleWindow title="My Message" close="close()">
+		<fx:Component className="AboutMsg">
+			<s:SkinnablePopUpContainer x="30" y="100">
+				<s:HGroup horizontalAlign="center"  width="100%" >
+					
+				<s:TitleWindow title="Thanks for using fsPhone" close="close()">
 					<s:VGroup horizontalAlign="center" paddingTop="8" paddingBottom="8" paddingLeft="8" paddingRight="8" gap="5" width="100%">
-						<s:Label text="My alert message text here..."/>
+						<s:Label text="fsPhone is developed by&#13;DongGuoxing, IP Team."/>
 						<s:Button label="OK" click="close()"/>
 					</s:VGroup>
 				</s:TitleWindow>
+				</s:HGroup>
 			</s:SkinnablePopUpContainer>
 		</fx:Component>
 	</fx:Declarations>
@@ -69,7 +72,6 @@
 			rtmp.addEventListener(CallConnectedEvent.CONNECTED, callConnectedEvent);
 			rtmp.addEventListener(CallDisconnectedEvent.DISCONNECTED, callDisconnectedEvent);
 			rtmp.addEventListener(MissedCallEvent.CALLMISSED, missedCallEvent);
-			//(new AlertMsg()).open(this, false);
 		}
 		
 		private function receivedLogMessageEvent(event:LogMessageEvent):void
@@ -215,8 +217,8 @@
 		
 		private function missedCallEvent(event:MissedCallEvent):void
 		{
-			trace("missedCallEvent " + event.message);
-//			phoneCanvas.missedCall();
+			trace("MissedCallEvent " + event.message);
+			FlexGlobals.topLevelApplication.navigator.activeView.missedCall();
 		}
 
 	]]>
@@ -231,4 +233,5 @@
 		}
 		
 	</fx:Style>
+
 </s:ViewNavigatorApplication>

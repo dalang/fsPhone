@@ -33,7 +33,7 @@
 			}
 			
 			private function onCancel(event:MouseEvent):void {
-				NativeApplication.nativeApplication.exit();
+				
 			}
 			
 			private function onLogin(event:MouseEvent):void {
@@ -69,7 +69,6 @@
 							navigator.pushView(views.fsPhoneView);
 							timer.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
 							dispatchEvent(new RtmpMessageEvent(RtmpMessageEvent.MESSAGE, RtmpMessageEvent.CALLSTATE, 'HupCall'));
-							FlexGlobals.topLevelApplication.dispatchEvent(new IndicatorEvent(IndicatorEvent.STATUS, IndicatorEvent.IDLE));
 						}
 						else
 						{
@@ -113,9 +112,11 @@
 		}
 	</fx:Style>
 	<s:viewMenuItems>
-		<s:ViewMenuItem label="Cancel" click="onCancel(event)"/>
-		<s:ViewMenuItem label="Login" click="onLogin(event)"/>
+		<s:ViewMenuItem label="Exit" click="NativeApplication.nativeApplication.exit();"/>
+		<s:ViewMenuItem label="Mail to author" click="navigateToURL(new URLRequest('mailto:dongguoxign@crscy.com.cn'));"/>
+		<s:ViewMenuItem label="About" click="(new AboutMsg()).open(this, false);"/>
 	</s:viewMenuItems>
+	
 	<s:Group x="21" y="40" width="280" height="284">
 		<s:Label x="26" y="10" text="SIP Account"/>
 		<s:TextInput id="sipAccountTxt" x="25" y="30" width="230" tabEnabled="true" tabIndex="0"
