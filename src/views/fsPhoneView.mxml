@@ -250,7 +250,7 @@
 				setPublishName(publishName);
 				incomingNetStream = new NetStream(netConnection);
 				//incomingNetStream.bufferTime = 0;
-				incomingNetStream.bufferTime = 0.2;
+				//incomingNetStream.bufferTime = 0.2;
 				incomingNetStream.receiveAudio(true);
 				incomingNetStream.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
 				incomingNetStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);

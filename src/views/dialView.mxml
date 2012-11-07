@@ -175,6 +175,7 @@
 					keyCount = 0;
 					dialnumTxt.text += chr;
 				}
+				
 				tmpChr = chr;
 				keyTimestamp = new Date();
 			}
@@ -212,7 +213,7 @@
 			
 		]]>
 	</fx:Script>
-	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false" text="@{dialBuffer.dialnum}"/>
+	<s:TextInput id="dialnumTxt" x="0" y="0" width="320" height="64" editable="false" text="@{dialBuffer.dialnum}" skinClass="spark.skins.mobile.TextInputSkin"/>
 	<s:HGroup x="0" y="62" width="100%" horizontalAlign="center">
 		<s:VGroup id="volGroup" height="339" horizontalAlign="center" verticalAlign="middle" visible="@{dialBuffer.isConnected}">
 			<s:VSlider id="volSlider" minimum="0" maximum="100" value="40" height="60%" width="18" liveDragging="true" thumbDrag="parentDocument.changeVolume(event)"/>	
