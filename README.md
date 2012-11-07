@@ -18,5 +18,5 @@ fsPhone is not an general sip softphone client, it works on RTMP connection supp
 - It will require Adobe AIR runtime for running, make sure you have installed Adobe AIR before running.
 
 ## Preview
-![first img](http://github.com/dalang/fsPhone/raw/master/screenshot/00.png)&nbsp;&nbsp;&nbsp;
-![second img](http://github.com/dalang/fsPhone/raw/master/screenshot/01.png)
+![first img](http://github.com/dalang/fsPhone/raw/master/screenshot/00.jpg)&nbsp;&nbsp;&nbsp;
+![second img](http://github.com/dalang/fsPhone/raw/master/screenshot/01.jpg)
